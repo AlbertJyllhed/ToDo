@@ -1,18 +1,20 @@
 import { useState } from "react";
+import CategoryInput from "./CategoryInput";
 
-function TodoInput({ handleTodoCreation }) {
-    const [todo, setTodo] = useState("");
+function TodoInput({ todoList, handleTodoCreation }) {
+    const [todoText, setTodoText] = useState("");
 
     return (
         <div>
-            <form onSubmit={(e) => handleTodoCreation(e, todo)}>
+            <form onSubmit={(e) => handleTodoCreation(e, todoText)}>
                 <input
                     type="text"
-                    placeholder="Enter To Do Text"
+                    placeholder="Enter Todo Text"
                     required
-                    value={todo}
-                    onChange={(e) => setTodo(e.target.value)}
+                    value={todoText}
+                    onChange={(e) => setTodoText(e.target.value)}
                 />
+                <CategoryInput todoList={todoList} />
                 <button type="submit">Add</button>
             </form>
         </div>
