@@ -1,0 +1,54 @@
+/* Hide the default checkbox but keep it accessible */
+.todo-item {
+    background-color: gray;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Style the custom checkbox (the label) */
+.custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #fff; /* Unchecked background */
+    border: 2px solid #ccc; /* Border */
+    border-radius: 4px; /* Optional: Rounded corners */
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease; /* Smooth hover/transition */
+}
+
+/* Add a checkmark using ::after pseudo-element */
+.custom-checkbox::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 4px;
+    width: 6px;
+    height: 10px;
+    border: solid #000; /* Checkmark color */
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg); /* Creates the check shape */
+}
+
+/* Show checkmark when checkbox is checked */
+input[type="checkbox"]:checked + .custom-checkbox::after {
+    display: block;
+}
+
+/* Hover effect */
+.custom-checkbox:hover {
+    border-color: #999;
+}

@@ -1,24 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import TodoInput from "./TodoInput";
 import SearchFilter from "./SearchFilter";
 import TodoItem from "./TodoItem";
 
 function TodoList() {
-    const [todoList, setTodoList] = useState(
-        JSON.parse(localStorage.getItem("todo")) || [],
-    );
-
-    // create category list and send to CategoryInput
-    const [categories, setCategories] = useState([]);
+    const [todoList, setTodoList] = useState(() => {
+        const saved = localStorage.getItem("todoApp");
+        return saved ? JSON.parse(saved).todoList || [] : [];
+    });
+    const [categories, setCategories] = useState(() => {
+        const saved = localStorage.getItem("todoApp");
+        return saved ? JSON.parse(saved).categories || [] : [];
+    });
     const [searchFilter, setSearchFilter] = useState([]);
 
+    // Saving to local storage whenever the todo list changes
     useEffect(() => {
-        localStorage.setItem("todo", JSON.stringify(todoList));
-    }, [todoList]);
+        localStorage.setItem(
+            "todoApp",
+            JSON.stringify({ todoList, categories }),
+        );
+    }, [todoList, categories]);
 
-    function handleTodoCreation(event, text, categories) {
-        event.preventDefault();
-        const deadline = Date.now() + 6.048e8;
+    // Filtered and sorted todos: undone first, then by deadline (earliest first)
+    const filteredSortedTodos = useMemo(() => {
+        let filtered = todoList;
+        if (searchFilter.length > 0) {
+            filtered = todoList.filter((todo) =>
+                todo.categories.some((cat) => searchFilter.includes(cat)),
+            );
+        }
+        return filtered.slice().sort((a, b) => {
+            // Undone items first
+            if (a.done !== b.done) {
+                return a.done ? 1 : -1;
+            }
+            // Same done status: sort by deadline (earliest first)
+            const dateA = new Date(a.deadline);
+            const dateB = new Date(b.deadline);
+            return dateA - dateB;
+        });
+    }, [todoList, searchFilter]);
+
+    // Creating a new todo item and adding it to the list
+    function handleTodoCreation(text, deadline, categories) {
         setTodoList([
             {
                 text: text,
@@ -30,6 +55,7 @@ function TodoList() {
         ]);
     }
 
+    // Changing the "done" status of a todo item
     function handleTodoChecking(index, status) {
         const todoCopy = [...todoList];
         todoCopy[index].done = status;
@@ -37,6 +63,7 @@ function TodoList() {
         // console.log(todoCopy);
     }
 
+    // Removing a todo item from the list
     function handleTodoRemoval(index) {
         const todoCopy = [...todoList];
         todoCopy.splice(index, 1);
@@ -44,6 +71,7 @@ function TodoList() {
         // console.log(todoCopy);
     }
 
+    // Adding a new category to the list of categories if it doesn't already exist
     function handleCategoryCreation(category) {
         if (!categories.some((c) => category === c)) {
             const trimmedCat = category.toLowerCase().trim();
@@ -51,14 +79,20 @@ function TodoList() {
         }
     }
 
+    // Removing a category from a todo item
     function removeCategory(todoIndex, categoryIndex) {
         const todoCopy = [...todoList];
         todoCopy[todoIndex].categories.splice(categoryIndex, 1);
         setTodoList(todoCopy);
     }
 
-    function handleSearchFilter(text) {
-        setSearchFilter([...searchFilter, text]);
+    // Toggle a category in the search filter array (click to activate/deactivate)
+    function handleSearchFilter(category) {
+        setSearchFilter((prev) =>
+            prev.includes(category)
+                ? prev.filter((item) => item !== category)
+                : [...prev, category],
+        );
     }
 
     return (
@@ -70,23 +104,25 @@ function TodoList() {
             />
             <SearchFilter
                 categories={categories}
+                selectedFilters={searchFilter}
                 handleSearchFilter={handleSearchFilter}
+                clearFilters={() => setSearchFilter([])}
             />
             <div className="todo-container">
-                {todoList.map((todo, index) =>
-                    // Fix issues
-                    searchFilter.some((filter) => todo.text === filter) ||
-                    searchFilter.length === 0 ? (
+                {filteredSortedTodos.map((todo) => {
+                    // Find the original index in todoList for actions
+                    const originalIndex = todoList.findIndex((t) => t === todo);
+                    return (
                         <TodoItem
-                            key={"todo#" + index}
+                            key={"todo#" + originalIndex}
                             todo={todo}
                             checkFunc={handleTodoChecking}
                             deleteFunc={handleTodoRemoval}
-                            index={index}
+                            index={originalIndex}
                             removeCategory={removeCategory}
                         />
-                    ) : null,
-                )}
+                    );
+                })}
             </div>
         </>
     );
