@@ -1,0 +1,16 @@
+.search-filter {
+    background-color: #fff;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+.search-filter p {
+    background-color: #001d3d;
+    color: #fff;
+    padding: 1rem;
+    border-top: 1px solid #003566;
+    border-left: 1px solid #003566;
+}

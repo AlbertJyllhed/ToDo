@@ -1,3 +1,5 @@
+import "./SearchFilter.css";
+
 function SearchFilter({
     categories,
     selectedFilters,
@@ -6,7 +8,7 @@ function SearchFilter({
 }) {
     return (
         <div className="search-filter">
-            {categories.length > 0 ? <p>Filter by category</p> : null}
+            {categories.length > 0 ? <p>Filter by Category</p> : null}
 
             <button
                 className={selectedFilters.length === 0 ? "active" : ""}

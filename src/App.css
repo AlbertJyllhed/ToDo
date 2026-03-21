@@ -32,3 +32,25 @@ button:hover {
 .active:hover {
     background-color: #004080;
 }
+
+.delete-btn {
+    background-color: #ff0017;
+}
+
+.delete-btn:hover {
+    background-color: #ff4000;
+}
+
+.heading {
+    background-color: #001d3d;
+    color: #fff;
+    border-top: 1px solid #003566;
+    border-left: 1px solid #003566;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.heading p {
+    padding: 1rem;
+}

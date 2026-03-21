@@ -1,18 +1,36 @@
 import { useState } from "react";
 import CategoryInput from "./CategoryInput";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import "./TodoInput.css";
 
-function TodoInput({ categories, handleTodoCreation, handleCategoryCreation }) {
+function TodoInput({
+    categories,
+    handleTodoCreation,
+    handleCategoryCreation,
+    handleCategoryRemoval,
+}) {
     const [todoText, setTodoText] = useState("");
     const [todoDeadline, setTodoDeadline] = useState("");
     const [todoCategories, setTodoCategories] = useState([]);
+    const [editMode, setEditMode] = useState(false);
 
     function toggleCategory(category) {
-        setTodoCategories((prev) =>
-            prev.includes(category)
-                ? prev.filter((c) => c !== category)
-                : [...prev, category],
-        );
+        if (editMode) {
+            // In removal mode: confirm and remove globally
+            if (
+                window.confirm(`Remove category "${category}" from all todos?`)
+            ) {
+                handleCategoryRemoval(category);
+            }
+        } else {
+            // Normal mode: toggle for new todo
+            setTodoCategories((prev) =>
+                prev.includes(category)
+                    ? prev.filter((c) => c !== category)
+                    : [...prev, category],
+            );
+        }
     }
 
     function createTodo(e) {
@@ -31,7 +49,7 @@ function TodoInput({ categories, handleTodoCreation, handleCategoryCreation }) {
                         createTodo(e, todoText, todoDeadline, todoCategories)
                     }
                 >
-                    <textarea
+                    <input
                         type="text"
                         placeholder="Enter Todo Text"
                         required
@@ -50,14 +68,22 @@ function TodoInput({ categories, handleTodoCreation, handleCategoryCreation }) {
                 />
             </div>
             <div className="categories">
-                <p>Add Categories</p>
+                <div className="heading">
+                    <p>{editMode ? "Remove Categories" : "Add Categories"}</p>
+                    <button onClick={() => setEditMode(!editMode)}>
+                        <FontAwesomeIcon
+                            icon={editMode ? faPenToSquare : faTrashCan}
+                        />
+                    </button>
+                </div>
                 {categories.map((category, index) => (
                     <button
                         key={"btn#" + index}
-                        className={`category-btn ${todoCategories.includes(category) ? "active" : ""}`}
+                        className={`${todoCategories.includes(category) && !editMode ? "active" : ""} ${editMode ? "delete-btn" : ""}`}
                         onClick={() => toggleCategory(category)}
                     >
                         {category}
+                        {editMode && <FontAwesomeIcon icon={faTrashCan} />}
                     </button>
                 ))}
             </div>

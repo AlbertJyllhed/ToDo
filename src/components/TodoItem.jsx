@@ -1,22 +1,26 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./TodoItem.css";
 
-function TodoItem({ todo, checkFunc, deleteFunc, index, removeCategory }) {
+function TodoItem({ todo, checkFunc, deleteFunc, index }) {
     return (
         <div className="todo-item">
-            <input
-                type="checkbox"
-                id={`todo-checkbox-${index}`}
-                checked={todo.done}
-                onChange={(e) => checkFunc(index, e.target.checked)}
-            />
-            <label
-                htmlFor={`todo-checkbox-${index}`}
-                className="custom-checkbox"
-            ></label>
-            <p>{todo.text}</p>
+            <div className="wrapper">
+                <input
+                    type="checkbox"
+                    id={`todo-checkbox-${index}`}
+                    checked={todo.done}
+                    onChange={(e) => checkFunc(index, e.target.checked)}
+                />
+                <label
+                    htmlFor={`todo-checkbox-${index}`}
+                    className="custom-checkbox"
+                ></label>
+                <p>{todo.text}</p>
+            </div>
             {todo.deadline && (
                 <p>
-                    Deadline:{" "}
+                    <FontAwesomeIcon icon={faClock} />
                     {new Intl.DateTimeFormat("sv-SE", {
                         year: "numeric",
                         month: "long",
@@ -24,18 +28,17 @@ function TodoItem({ todo, checkFunc, deleteFunc, index, removeCategory }) {
                     }).format(new Date(todo.deadline))}
                 </p>
             )}
-            {todo.categories &&
-                todo.categories.length > 0 &&
-                todo.categories.map((category, i) => (
-                    <button
-                        key={todo.text + "#" + i}
-                        onClick={() => removeCategory(index, i)}
-                    >
-                        {category}
-                    </button>
-                ))}
+            <div className="wrapper">
+                {todo.categories &&
+                    todo.categories.length > 0 &&
+                    todo.categories.map((category, i) => (
+                        <button key={todo.text + "#" + i} className="active">
+                            {category}
+                        </button>
+                    ))}
+            </div>
             <button className="delete-btn" onClick={() => deleteFunc(index)}>
-                &#10006;
+                <FontAwesomeIcon icon={faXmark} />
             </button>
         </div>
     );

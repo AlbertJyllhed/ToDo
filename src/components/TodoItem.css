@@ -1,11 +1,9 @@
-/* Hide the default checkbox but keep it accessible */
 .todo-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #001d3d;
     color: #fff;
-    padding: 1rem;
     margin: 1rem 0;
     border-top: 1px solid #003566;
     border-left: 1px solid #003566;
@@ -28,6 +26,7 @@ input[type="checkbox"] {
     display: inline-block;
     width: 20px;
     height: 20px;
+    margin: 1rem;
     background-color: #fff; /* Unchecked background */
     border: 2px solid #ccc; /* Border */
     border-radius: 4px; /* Optional: Rounded corners */
@@ -59,10 +58,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
     border-color: #999;
 }
 
-.delete-btn {
-    background-color: #ff0017;
-}
-
-.delete-btn:hover {
-    background-color: #ff4000;
+.wrapper {
+    display: flex;
+    align-items: center;
 }

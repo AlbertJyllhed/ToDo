@@ -8,10 +8,12 @@ html,
 body {
     background-color: #000814;
     width: 80%;
-    height: 100%;
+    min-height: 100%;
     margin: auto;
 }
 
 #root {
     font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    flex: 1;
 }

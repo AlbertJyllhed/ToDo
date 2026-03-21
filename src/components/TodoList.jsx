@@ -79,11 +79,20 @@ function TodoList() {
         }
     }
 
-    // Removing a category from a todo item
-    function removeCategory(todoIndex, categoryIndex) {
-        const todoCopy = [...todoList];
-        todoCopy[todoIndex].categories.splice(categoryIndex, 1);
-        setTodoList(todoCopy);
+    // Removing a category globally and from all todos
+    function handleCategoryRemoval(categoryToRemove) {
+        // Remove from categories list
+        setCategories(categories.filter((cat) => cat !== categoryToRemove));
+
+        // Remove from all todos that have this category
+        setTodoList(
+            todoList.map((todo) => ({
+                ...todo,
+                categories: todo.categories.filter(
+                    (cat) => cat !== categoryToRemove,
+                ),
+            })),
+        );
     }
 
     // Toggle a category in the search filter array (click to activate/deactivate)
@@ -101,6 +110,7 @@ function TodoList() {
                 categories={categories}
                 handleTodoCreation={handleTodoCreation}
                 handleCategoryCreation={handleCategoryCreation}
+                handleCategoryRemoval={handleCategoryRemoval}
             />
             <SearchFilter
                 categories={categories}
@@ -119,7 +129,6 @@ function TodoList() {
                             checkFunc={handleTodoChecking}
                             deleteFunc={handleTodoRemoval}
                             index={originalIndex}
-                            removeCategory={removeCategory}
                         />
                     );
                 })}
