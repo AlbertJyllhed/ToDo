@@ -1,8 +1,14 @@
 /* Hide the default checkbox but keep it accessible */
 .todo-item {
-    background-color: gray;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #001d3d;
+    color: #fff;
     padding: 1rem;
     margin: 1rem 0;
+    border-top: 1px solid #003566;
+    border-left: 1px solid #003566;
     border-radius: 10px;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
@@ -51,4 +57,12 @@ input[type="checkbox"]:checked + .custom-checkbox::after {
 /* Hover effect */
 .custom-checkbox:hover {
     border-color: #999;
+}
+
+.delete-btn {
+    background-color: #ff0017;
+}
+
+.delete-btn:hover {
+    background-color: #ff4000;
 }

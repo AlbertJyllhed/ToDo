@@ -3,6 +3,16 @@ import "./TodoItem.css";
 function TodoItem({ todo, checkFunc, deleteFunc, index, removeCategory }) {
     return (
         <div className="todo-item">
+            <input
+                type="checkbox"
+                id={`todo-checkbox-${index}`}
+                checked={todo.done}
+                onChange={(e) => checkFunc(index, e.target.checked)}
+            />
+            <label
+                htmlFor={`todo-checkbox-${index}`}
+                className="custom-checkbox"
+            ></label>
             <p>{todo.text}</p>
             {todo.deadline && (
                 <p>
@@ -14,16 +24,6 @@ function TodoItem({ todo, checkFunc, deleteFunc, index, removeCategory }) {
                     }).format(new Date(todo.deadline))}
                 </p>
             )}
-            <input
-                type="checkbox"
-                id={`todo-checkbox-${index}`}
-                checked={todo.done}
-                onChange={(e) => checkFunc(index, e.target.checked)}
-            />
-            <label
-                htmlFor={`todo-checkbox-${index}`}
-                className="custom-checkbox"
-            ></label>
             {todo.categories &&
                 todo.categories.length > 0 &&
                 todo.categories.map((category, i) => (
@@ -34,7 +34,7 @@ function TodoItem({ todo, checkFunc, deleteFunc, index, removeCategory }) {
                         {category}
                     </button>
                 ))}
-            <button className="delete" onClick={() => deleteFunc(index)}>
+            <button className="delete-btn" onClick={() => deleteFunc(index)}>
                 &#10006;
             </button>
         </div>
