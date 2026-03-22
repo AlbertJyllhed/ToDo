@@ -1,4 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
+import {
+    DndContext,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import TodoInput from "./TodoInput";
 import SearchFilter from "./SearchFilter";
 import TodoItem from "./TodoItem";
@@ -13,6 +26,7 @@ function TodoList() {
         return saved ? JSON.parse(saved).categories || [] : [];
     });
     const [searchFilter, setSearchFilter] = useState([]);
+    const [filterEnabled, setFilterEnabled] = useState(true);
 
     // Saving to local storage whenever the todo list changes
     useEffect(() => {
@@ -22,30 +36,45 @@ function TodoList() {
         );
     }, [todoList, categories]);
 
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
     // Filtered and sorted todos: undone first, then by deadline (earliest first)
     const filteredSortedTodos = useMemo(() => {
         let filtered = todoList;
-        if (searchFilter.length > 0) {
+        if (filterEnabled && searchFilter.length > 0) {
             filtered = todoList.filter((todo) =>
                 todo.categories.some((cat) => searchFilter.includes(cat)),
             );
         }
-        return filtered.slice().sort((a, b) => {
-            // Undone items first
-            if (a.done !== b.done) {
-                return a.done ? 1 : -1;
-            }
-            // Same done status: sort by deadline (earliest first)
-            const dateA = new Date(a.deadline);
-            const dateB = new Date(b.deadline);
-            return dateA - dateB;
-        });
-    }, [todoList, searchFilter]);
+
+        // Only sort when filtering is enabled
+        if (filterEnabled) {
+            return filtered.slice().sort((a, b) => {
+                // Undone items first
+                if (a.done !== b.done) {
+                    return a.done ? 1 : -1;
+                }
+                // Same done status: sort by deadline (earliest first)
+                const dateA = new Date(a.deadline);
+                const dateB = new Date(b.deadline);
+                return dateA - dateB;
+            });
+        } else {
+            // When filtering disabled return items in current order
+            return filtered.slice();
+        }
+    }, [todoList, searchFilter, filterEnabled]);
 
     // Creating a new todo item and adding it to the list
     function handleTodoCreation(text, deadline, categories) {
         setTodoList([
             {
+                id: Date.now(),
                 text: text,
                 done: false,
                 deadline: deadline,
@@ -104,6 +133,59 @@ function TodoList() {
         );
     }
 
+    function handleSearchFilterToggle() {
+        setFilterEnabled((prev) => !prev);
+    }
+
+    // Handle drag and drop reordering
+    function handleDragEnd(event) {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            const oldIndex = todoList.findIndex(
+                (todo) => todo.id === active.id,
+            );
+            const newIndex = todoList.findIndex((todo) => todo.id === over.id);
+
+            if (oldIndex !== -1 && newIndex !== -1) {
+                setTodoList(arrayMove(todoList, oldIndex, newIndex));
+            }
+        }
+    }
+
+    // Drag enabled only when filter is disabled
+    const dragEnabled = !filterEnabled;
+
+    // Create the todo container content
+    const todoContainerContent = filteredSortedTodos.map((todo) => {
+        const originalIndex = todoList.findIndex((t) => t.id === todo.id);
+        return (
+            <TodoItem
+                key={todo.id}
+                todo={todo}
+                checkFunc={handleTodoChecking}
+                deleteFunc={handleTodoRemoval}
+                index={originalIndex}
+                dragEnabled={dragEnabled}
+            />
+        );
+    });
+
+    // Render the container with or without drag context
+    const todoContainer = dragEnabled ? (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragEnd={handleDragEnd}
+        >
+            <SortableContext items={todoList.map((todo) => todo.id)}>
+                <div className="todo-container">{todoContainerContent}</div>
+            </SortableContext>
+        </DndContext>
+    ) : (
+        <div className="todo-container">{todoContainerContent}</div>
+    );
+
     return (
         <>
             <TodoInput
@@ -117,22 +199,10 @@ function TodoList() {
                 selectedFilters={searchFilter}
                 handleSearchFilter={handleSearchFilter}
                 clearFilters={() => setSearchFilter([])}
+                filterEnabled={filterEnabled}
+                handleSearchFilterToggle={handleSearchFilterToggle}
             />
-            <div className="todo-container">
-                {filteredSortedTodos.map((todo) => {
-                    // Find the original index in todoList for actions
-                    const originalIndex = todoList.findIndex((t) => t === todo);
-                    return (
-                        <TodoItem
-                            key={"todo#" + originalIndex}
-                            todo={todo}
-                            checkFunc={handleTodoChecking}
-                            deleteFunc={handleTodoRemoval}
-                            index={originalIndex}
-                        />
-                    );
-                })}
-            </div>
+            {todoContainer}
         </>
     );
 }

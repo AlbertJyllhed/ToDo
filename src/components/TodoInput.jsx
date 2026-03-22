@@ -67,7 +67,7 @@ function TodoInput({
                     handleCategoryCreation={handleCategoryCreation}
                 />
             </div>
-            <div className="categories">
+            <div className="content">
                 <div className="heading">
                     <p>{editMode ? "Remove Categories" : "Add Categories"}</p>
                     <button onClick={() => setEditMode(!editMode)}>

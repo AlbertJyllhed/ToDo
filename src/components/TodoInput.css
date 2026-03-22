@@ -27,13 +27,3 @@ textarea:focus {
     outline: none;
     box-shadow: 0 0 5px #ffc300;
 }
-
-.categories {
-    background-color: #fff;
-    margin-bottom: 1rem;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
-}

@@ -1,8 +1,9 @@
 .todo-item {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #001d3d;
+    background: linear-gradient(#001d3d, #003566);
     color: #fff;
     margin: 1rem 0;
     border-top: 1px solid #003566;
@@ -14,48 +15,45 @@
     -o-border-radius: 10px;
 }
 
+.todo-item.dragging {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
+
+.todo-item-checked {
+    background: linear-gradient(#001124, #001d3d);
+    color: #999;
+    border-top: 1px solid #001d3d;
+    border-left: 1px solid #001d3d;
+}
+
+.todo-text-checked {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+}
+
+.drag-handle {
+    cursor: grab;
+    padding: 1rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.todo-item.dragging .drag-handle {
+    cursor: grabbing;
+}
+
 /* Custom checkbox styling */
 input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-/* Style the custom checkbox (the label) */
-.custom-checkbox {
-    display: inline-block;
     width: 20px;
     height: 20px;
-    margin: 1rem;
-    background-color: #fff; /* Unchecked background */
-    border: 2px solid #ccc; /* Border */
-    border-radius: 4px; /* Optional: Rounded corners */
     cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease; /* Smooth hover/transition */
-}
-
-/* Add a checkmark using ::after pseudo-element */
-.custom-checkbox::after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 4px;
-    width: 6px;
-    height: 10px;
-    border: solid #000; /* Checkmark color */
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg); /* Creates the check shape */
-}
-
-/* Show checkmark when checkbox is checked */
-input[type="checkbox"]:checked + .custom-checkbox::after {
-    display: block;
-}
-
-/* Hover effect */
-.custom-checkbox:hover {
-    border-color: #999;
 }
 
 .wrapper {

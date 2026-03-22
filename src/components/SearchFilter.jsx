@@ -1,15 +1,30 @@
-import "./SearchFilter.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter, faBan } from "@fortawesome/free-solid-svg-icons";
 
 function SearchFilter({
     categories,
     selectedFilters,
     handleSearchFilter,
     clearFilters,
+    filterEnabled,
+    handleSearchFilterToggle,
 }) {
     return (
-        <div className="search-filter">
-            {categories.length > 0 ? <p>Filter by Category</p> : null}
-
+        <div className="content">
+            <div className="heading">
+                {filterEnabled ? (
+                    <p>Filter by Category</p>
+                ) : (
+                    <p>Manual Sorting</p>
+                )}
+                <button onClick={handleSearchFilterToggle}>
+                    {filterEnabled ? (
+                        <FontAwesomeIcon icon={faBan} />
+                    ) : (
+                        <FontAwesomeIcon icon={faFilter} />
+                    )}
+                </button>
+            </div>
             <button
                 className={selectedFilters.length === 0 ? "active" : ""}
                 onClick={clearFilters}
